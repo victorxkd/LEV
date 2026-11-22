@@ -40,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </header>
         <main className="flex-1">{children}</main>
         <footer className="border-t border-zinc-200 bg-white py-6 text-center text-sm text-zinc-400">
-          LEV — Loja de Periféricos · Trabalho prático de Teste de Software · DCC/UFMG
+          LEV — Loja de Periféricos
         </footer>
       </body>
     </html>
