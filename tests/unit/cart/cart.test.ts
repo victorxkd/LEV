@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { addItem, removeItem, updateQuantity } from "@/lib/cart/cart";
+import { addItem, removeItem, updateQuantity, getTotal } from "@/lib/cart/cart";
 import { Product } from "@/lib/types";
 
 const product: Product = {
@@ -239,5 +239,67 @@ describe("updateQuantity", () => {
     expect(result.ok).toBe(true);
     expect(result.cart).toHaveLength(2);
     expect(result.cart.find((i) => i.productId === "ms-1")?.quantity).toBe(2);
+  });
+});
+
+const catalogProducts: Product[] = [
+  {
+    id: "kb-1",
+    name: "Teclado Mecânico RGB",
+    category: "keyboard",
+    priceInCents: 25000,
+    stock: 10,
+    specs: {},
+  },
+  {
+    id: "ms-1",
+    name: "Mouse Gamer Pro",
+    category: "mouse",
+    priceInCents: 15000,
+    stock: 5,
+    specs: {},
+  },
+];
+
+describe("getTotal", () => {
+  it("retorna zero para carrinho vazio", () => {
+    const result = getTotal([], catalogProducts);
+
+    expect(result).toBe(0);
+  });
+
+  it("calcula o total de um único item com quantidade 1", () => {
+    const cart = [{ productId: "kb-1", quantity: 1 }];
+
+    const result = getTotal(cart, catalogProducts);
+
+    expect(result).toBe(25000);
+  });
+
+  it("multiplica preço pela quantidade do item", () => {
+    const cart = [{ productId: "kb-1", quantity: 3 }];
+
+    const result = getTotal(cart, catalogProducts);
+
+    expect(result).toBe(75000);
+  });
+
+  it("soma o total de múltiplos itens", () => {
+    const cart = [
+      { productId: "kb-1", quantity: 1 },
+      { productId: "ms-1", quantity: 2 },
+    ];
+
+    const result = getTotal(cart, catalogProducts);
+
+    expect(result).toBe(55000);
+  });
+
+  it("ignora itens do carrinho cujo produto não existe no catálogo", () => {
+    const cart = [{ productId: "inexistente", quantity: 1 }];
+
+    const result = getTotal(cart, catalogProducts);
+
+    expect(result).toBe(0);
   });
 });
