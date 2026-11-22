@@ -5,6 +5,7 @@ import Link from "next/link";
 import { searchByName, filterByCategory, sortByPrice } from "@/lib/catalog/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/storage/useCart";
+import { useCompare } from "@/lib/storage/useCompare";
 import { Category } from "@/lib/types";
 
 const CATEGORIES: { value: Category | "all"; label: string }[] = [
@@ -19,6 +20,7 @@ const CATEGORIES: { value: Category | "all"; label: string }[] = [
 
 export function CatalogoClient() {
   const { products, add } = useCart();
+  const { list: compareList, add: addToCompare } = useCompare();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<Category | "all">("all");
   const [order, setOrder] = useState<"asc" | "desc" | "none">("none");
@@ -34,16 +36,34 @@ export function CatalogoClient() {
     setTimeout(() => setFeedback(null), 2500);
   }
 
+  function handleAddToCompare(product: Parameters<typeof addToCompare>[0]) {
+    const ok = addToCompare(product);
+    setFeedback(
+      ok ? `"${product.name}" adicionado à comparação.` : `Comparação cheia (máx. 3 produtos).`,
+    );
+    setTimeout(() => setFeedback(null), 2500);
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-zinc-900">Catálogo</h1>
-        <Link
-          href="/carrinho"
-          className="text-sm font-medium text-zinc-700 border border-zinc-300 rounded-lg px-4 py-2 hover:bg-zinc-50 transition-colors"
-        >
-          Ver carrinho
-        </Link>
+        <div className="flex gap-3">
+          {compareList.length > 0 && (
+            <Link
+              href="/comparar"
+              className="text-sm font-medium text-zinc-700 border border-zinc-300 rounded-lg px-4 py-2 hover:bg-zinc-50 transition-colors"
+            >
+              Comparar ({compareList.length})
+            </Link>
+          )}
+          <Link
+            href="/carrinho"
+            className="text-sm font-medium text-zinc-700 border border-zinc-300 rounded-lg px-4 py-2 hover:bg-zinc-50 transition-colors"
+          >
+            Ver carrinho
+          </Link>
+        </div>
       </div>
 
       {feedback && (
@@ -92,7 +112,13 @@ export function CatalogoClient() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToCart={handleAddToCart}
+              onAddToCompare={handleAddToCompare}
+              inCompare={compareList.some((p) => p.id === product.id)}
+            />
           ))}
         </div>
       )}

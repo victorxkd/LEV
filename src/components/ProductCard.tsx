@@ -14,9 +14,11 @@ const CATEGORY_LABELS: Record<string, string> = {
 type Props = {
   product: Product;
   onAddToCart?: (product: Product) => void;
+  onAddToCompare?: (product: Product) => void;
+  inCompare?: boolean;
 };
 
-export function ProductCard({ product, onAddToCart }: Props) {
+export function ProductCard({ product, onAddToCart, onAddToCompare, inCompare }: Props) {
   const inStock = product.stock > 0;
 
   return (
@@ -42,6 +44,15 @@ export function ProductCard({ product, onAddToCart }: Props) {
             className="w-full text-sm font-semibold bg-zinc-900 text-white rounded-lg px-3 py-2 hover:bg-zinc-700 disabled:opacity-40 transition-colors"
           >
             Adicionar ao carrinho
+          </button>
+        )}
+        {onAddToCompare && (
+          <button
+            onClick={() => onAddToCompare(product)}
+            disabled={inCompare}
+            className="w-full text-sm font-medium border border-zinc-300 text-zinc-700 rounded-lg px-3 py-2 hover:bg-zinc-50 disabled:opacity-40 transition-colors"
+          >
+            {inCompare ? "Na comparação" : "Comparar"}
           </button>
         )}
         <Link
