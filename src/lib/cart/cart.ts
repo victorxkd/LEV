@@ -50,3 +50,11 @@ export function updateQuantity(
     ),
   };
 }
+
+export function getTotal(cart: CartItem[], products: Product[]): number {
+  return cart.reduce((sum, item) => {
+    const product = products.find((p) => p.id === item.productId);
+    if (!product) return sum;
+    return sum + product.priceInCents * item.quantity;
+  }, 0);
+}
