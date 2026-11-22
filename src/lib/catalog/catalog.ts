@@ -9,3 +9,9 @@ export function searchByName(products: Product[], query: string): Product[] {
 export function filterByCategory(products: Product[], category: Category): Product[] {
   return products.filter((p) => p.category === category);
 }
+
+export function sortByPrice(products: Product[], order: "asc" | "desc"): Product[] {
+  return [...products].sort((a, b) =>
+    order === "asc" ? a.priceInCents - b.priceInCents : b.priceInCents - a.priceInCents,
+  );
+}
