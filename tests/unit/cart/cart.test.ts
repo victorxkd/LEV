@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { addItem, removeItem } from "@/lib/cart/cart";
+import { addItem, removeItem, updateQuantity } from "@/lib/cart/cart";
 import { Product } from "@/lib/types";
 
 const product: Product = {
@@ -164,5 +164,80 @@ describe("removeItem", () => {
     removeItem(cart, "kb-1");
 
     expect(cart).toHaveLength(1);
+  });
+});
+
+describe("updateQuantity", () => {
+  it("atualiza a quantidade de um item existente no carrinho", () => {
+    const cart = [{ productId: "kb-1", quantity: 1 }];
+
+    const result = updateQuantity(cart, "kb-1", 3, 5);
+
+    expect(result.ok).toBe(true);
+    expect(result.cart[0].quantity).toBe(3);
+  });
+
+  it("rejeita quando a nova quantidade excede o estoque", () => {
+    const cart = [{ productId: "kb-1", quantity: 1 }];
+
+    const result = updateQuantity(cart, "kb-1", 6, 5);
+
+    expect(result.ok).toBe(false);
+    expect(result.cart[0].quantity).toBe(1);
+  });
+
+  it("rejeita quantidade zero", () => {
+    const cart = [{ productId: "kb-1", quantity: 2 }];
+
+    const result = updateQuantity(cart, "kb-1", 0, 5);
+
+    expect(result.ok).toBe(false);
+    expect(result.cart[0].quantity).toBe(2);
+  });
+
+  it("rejeita quantidade negativa", () => {
+    const cart = [{ productId: "kb-1", quantity: 2 }];
+
+    const result = updateQuantity(cart, "kb-1", -1, 5);
+
+    expect(result.ok).toBe(false);
+  });
+
+  it("permite atualizar para exatamente o limite do estoque", () => {
+    const cart = [{ productId: "kb-1", quantity: 1 }];
+
+    const result = updateQuantity(cart, "kb-1", 5, 5);
+
+    expect(result.ok).toBe(true);
+    expect(result.cart[0].quantity).toBe(5);
+  });
+
+  it("retorna ok false quando o produto não está no carrinho", () => {
+    const cart = [{ productId: "kb-1", quantity: 1 }];
+
+    const result = updateQuantity(cart, "ms-1", 2, 5);
+
+    expect(result.ok).toBe(false);
+  });
+
+  it("não modifica o carrinho original", () => {
+    const cart = [{ productId: "kb-1", quantity: 1 }];
+
+    updateQuantity(cart, "kb-1", 3, 5);
+
+    expect(cart[0].quantity).toBe(1);
+  });
+
+  it("preserva os outros itens ao atualizar um produto", () => {
+    const cart = [
+      { productId: "kb-1", quantity: 1 },
+      { productId: "ms-1", quantity: 2 },
+    ];
+
+    const result = updateQuantity(cart, "kb-1", 3, 5);
+
+    expect(result.ok).toBe(true);
+    expect(result.cart).toHaveLength(2);
+    expect(result.cart.find((i) => i.productId === "ms-1")?.quantity).toBe(2);
   });
 });
