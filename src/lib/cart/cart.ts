@@ -29,3 +29,24 @@ export function addItem(cart: CartItem[], product: Product, quantity: number): C
 export function removeItem(cart: CartItem[], productId: string): CartItem[] {
   return cart.filter((item) => item.productId !== productId);
 }
+
+export function updateQuantity(
+  cart: CartItem[],
+  productId: string,
+  quantity: number,
+  stock: number,
+): { ok: boolean; cart: CartItem[] } {
+  if (quantity < 1) return { ok: false, cart: [...cart] };
+
+  const exists = cart.some((item) => item.productId === productId);
+  if (!exists) return { ok: false, cart: [...cart] };
+
+  if (quantity > stock) return { ok: false, cart: [...cart] };
+
+  return {
+    ok: true,
+    cart: cart.map((item) =>
+      item.productId === productId ? { ...item, quantity } : { ...item },
+    ),
+  };
+}
