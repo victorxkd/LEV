@@ -13,9 +13,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 type Props = {
   product: Product;
+  onAddToCart?: (product: Product) => void;
 };
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, onAddToCart }: Props) {
   const inStock = product.stock > 0;
 
   return (
@@ -33,10 +34,19 @@ export function ProductCard({ product }: Props) {
         {inStock ? `${product.stock} em estoque` : "Fora de estoque"}
       </p>
 
-      <div className="mt-auto pt-2">
+      <div className="mt-auto pt-2 flex flex-col gap-2">
+        {onAddToCart && (
+          <button
+            onClick={() => onAddToCart(product)}
+            disabled={!inStock}
+            className="w-full text-sm font-semibold bg-zinc-900 text-white rounded-lg px-3 py-2 hover:bg-zinc-700 disabled:opacity-40 transition-colors"
+          >
+            Adicionar ao carrinho
+          </button>
+        )}
         <Link
           href={`/catalogo/${product.id}`}
-          className="block w-full text-center text-sm font-medium bg-zinc-900 text-white rounded-lg px-3 py-2 hover:bg-zinc-700 transition-colors"
+          className="block w-full text-center text-sm font-medium border border-zinc-300 text-zinc-700 rounded-lg px-3 py-2 hover:bg-zinc-50 transition-colors"
         >
           Ver detalhes
         </Link>
