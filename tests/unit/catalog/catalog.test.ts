@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { searchByName, filterByCategory } from "@/lib/catalog/catalog";
+import { searchByName, filterByCategory, sortByPrice } from "@/lib/catalog/catalog";
 import { Product } from "@/lib/types";
 
 const products: Product[] = [
@@ -114,6 +114,47 @@ describe("filterByCategory", () => {
     const original = [...products];
 
     filterByCategory(products, "keyboard");
+
+    expect(products).toEqual(original);
+  });
+});
+
+describe("sortByPrice", () => {
+  it("ordena produtos do menor para o maior preço", () => {
+    const result = sortByPrice(products, "asc");
+
+    expect(result[0].id).toBe("mp-1");
+    expect(result[1].id).toBe("ms-1");
+    expect(result[2].id).toBe("kb-1");
+  });
+
+  it("ordena produtos do maior para o menor preço", () => {
+    const result = sortByPrice(products, "desc");
+
+    expect(result[0].id).toBe("kb-1");
+    expect(result[1].id).toBe("ms-1");
+    expect(result[2].id).toBe("mp-1");
+  });
+
+  it("retorna lista vazia quando não há produtos", () => {
+    const result = sortByPrice([], "asc");
+
+    expect(result).toHaveLength(0);
+  });
+
+  it("retorna lista com um único produto sem alterar nada", () => {
+    const single = [products[0]];
+
+    const result = sortByPrice(single, "asc");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("kb-1");
+  });
+
+  it("não modifica a lista original de produtos", () => {
+    const original = [...products];
+
+    sortByPrice(products, "asc");
 
     expect(products).toEqual(original);
   });
