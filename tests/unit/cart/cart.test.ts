@@ -98,4 +98,26 @@ describe("addItem", () => {
     expect(result.ok).toBe(true);
     expect(result.cart).toHaveLength(2);
   });
+
+  it("preserva os outros itens do carrinho ao incrementar um produto existente", () => {
+    const other: Product = {
+      id: "ms-1",
+      name: "Mouse Gamer",
+      category: "mouse",
+      priceInCents: 15000,
+      stock: 3,
+      specs: {},
+    };
+    const cart = [
+      { productId: "kb-1", quantity: 1 },
+      { productId: "ms-1", quantity: 1 },
+    ];
+
+    const result = addItem(cart, other, 1);
+
+    expect(result.ok).toBe(true);
+    expect(result.cart).toHaveLength(2);
+    expect(result.cart.find((i) => i.productId === "kb-1")?.quantity).toBe(1);
+    expect(result.cart.find((i) => i.productId === "ms-1")?.quantity).toBe(2);
+  });
 });
