@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { searchByName } from "@/lib/catalog/catalog";
+import { searchByName, filterByCategory } from "@/lib/catalog/catalog";
 import { Product } from "@/lib/types";
 
 const products: Product[] = [
@@ -73,6 +73,47 @@ describe("searchByName", () => {
     const original = [...products];
 
     searchByName(products, "mouse");
+
+    expect(products).toEqual(original);
+  });
+});
+
+describe("filterByCategory", () => {
+  it("retorna apenas os produtos da categoria informada", () => {
+    const result = filterByCategory(products, "mouse");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("ms-1");
+  });
+
+  it("retorna lista vazia quando nenhum produto pertence à categoria", () => {
+    const result = filterByCategory(products, "headset");
+
+    expect(result).toHaveLength(0);
+  });
+
+  it("retorna múltiplos produtos quando mais de um pertence à categoria", () => {
+    const extra: Product[] = [
+      ...products,
+      {
+        id: "ms-2",
+        name: "Mouse Sem Fio",
+        category: "mouse",
+        priceInCents: 12000,
+        stock: 8,
+        specs: {},
+      },
+    ];
+
+    const result = filterByCategory(extra, "mouse");
+
+    expect(result).toHaveLength(2);
+  });
+
+  it("não modifica a lista original de produtos", () => {
+    const original = [...products];
+
+    filterByCategory(products, "keyboard");
 
     expect(products).toEqual(original);
   });
