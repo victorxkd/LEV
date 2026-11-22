@@ -143,8 +143,9 @@ export function AdminClient() {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-zinc-700 mb-1">Nome</label>
+            <label htmlFor="admin-name" className="block text-sm font-medium text-zinc-700 mb-1">Nome</label>
             <input
+              id="admin-name"
               type="text"
               value={form.name}
               onChange={(e) => handleField("name", e.target.value)}
@@ -154,8 +155,9 @@ export function AdminClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">Categoria</label>
+            <label htmlFor="admin-category" className="block text-sm font-medium text-zinc-700 mb-1">Categoria</label>
             <select
+              id="admin-category"
               value={form.category}
               onChange={(e) => handleField("category", e.target.value)}
               className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400"
@@ -169,10 +171,11 @@ export function AdminClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
+            <label htmlFor="admin-price" className="block text-sm font-medium text-zinc-700 mb-1">
               Preço (R$)
             </label>
             <input
+              id="admin-price"
               type="number"
               min="0.01"
               step="0.01"
@@ -184,8 +187,9 @@ export function AdminClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">Estoque</label>
+            <label htmlFor="admin-stock" className="block text-sm font-medium text-zinc-700 mb-1">Estoque</label>
             <input
+              id="admin-stock"
               type="number"
               min="0"
               step="1"
@@ -197,11 +201,12 @@ export function AdminClient() {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
+            <label htmlFor="admin-specs" className="block text-sm font-medium text-zinc-700 mb-1">
               Especificações{" "}
               <span className="text-zinc-400 font-normal">(uma por linha: chave: valor)</span>
             </label>
             <textarea
+              id="admin-specs"
               value={form.specs}
               onChange={(e) => handleField("specs", e.target.value)}
               rows={4}
