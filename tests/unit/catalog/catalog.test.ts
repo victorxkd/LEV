@@ -1,11 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { searchByName } from "@/lib/catalog/catalog";
+import { Product } from "@/lib/types";
 
-const products = [
+const products: Product[] = [
   {
     id: "kb-1",
     name: "Teclado Mecânico RGB",
-    category: "keyboard" as const,
+    category: "keyboard",
     priceInCents: 25000,
     stock: 10,
     specs: {},
@@ -13,7 +14,7 @@ const products = [
   {
     id: "ms-1",
     name: "Mouse Gamer Pro",
-    category: "mouse" as const,
+    category: "mouse",
     priceInCents: 15000,
     stock: 5,
     specs: {},
@@ -21,7 +22,7 @@ const products = [
   {
     id: "mp-1",
     name: "Mousepad XL",
-    category: "mousepad" as const,
+    category: "mousepad",
     priceInCents: 8000,
     stock: 20,
     specs: {},
