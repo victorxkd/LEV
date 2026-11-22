@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LEV — Loja de Periféricos
 
-## Getting Started
+Trabalho prático da disciplina **Teste de Software** — DCC/UFMG.
 
-First, run the development server:
+🔗 **[lev-azure.vercel.app](https://lev-azure.vercel.app/)**
+
+## Integrantes
+
+- Enzo da Costa Arantes
+- Leticia dos Santos Caldeira
+- Victor Felipe da Cruz Oliveira
+
+## Sobre o sistema
+
+O LEV é uma loja virtual de periféricos para computador (teclados, mouses, mousepads, suportes de monitor, headsets e acessórios). O sistema roda inteiramente no navegador — sem backend externo, sem banco de dados e sem pagamento real. Os dados iniciais são estáticos; carrinho, pedidos, estoque e produtos criados pelo administrador ficam em memória e/ou `localStorage`.
+
+Funcionalidades:
+
+- Catálogo com busca, filtro por categoria e ordenação por preço
+- Comparação de até 3 produtos (especificações lado a lado)
+- Carrinho de compras com controle de estoque
+- Finalização de pedidos
+- Página admin para criar, editar e remover produtos (sem autenticação real)
+
+## Tecnologias
+
+| Camada | Tecnologia |
+|---|---|
+| Framework | Next.js 16 (App Router) + TypeScript strict |
+| Estilo | Tailwind CSS 4 |
+| Testes de unidade | Vitest 5 + @vitest/coverage-v8 |
+| Testes e2e | Playwright (somente Chromium) |
+| Linting/Formatação | ESLint + Prettier |
+| CI | GitHub Actions (Ubuntu, macOS, Windows) |
+| Cobertura | Codecov |
+| Deploy | Vercel (branch `main`) |
+
+## Uso de IA
+
+Utilizamos Claude e ChatGPT como assistentes durante o desenvolvimento. As ferramentas foram usadas principalmente para orientar as etapas a seguir no projeto — sugerindo ordem de implementação, estrutura de arquivos e boas práticas — e para auxiliar na configuração do ambiente (Vitest, Playwright, ESLint, Prettier, GitHub Actions). Testes de unidade e decisões de arquitetura também contaram com apoio dessas ferramentas. Todo o código gerado foi revisado, compreendido e adaptado pelos integrantes.
+
+## Execução dos testes
+
+### Pré-requisitos
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Testes de unidade
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm test
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Testes de unidade com relatório de cobertura
 
-## Learn More
+```bash
+npm run test:coverage
+```
 
-To learn more about Next.js, take a look at the following resources:
+A cobertura mínima exigida é **80%** em linhas, funções, branches e statements. O relatório HTML é gerado em `coverage/lcov-report/index.html`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Interface visual dos testes (Vitest UI)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run test:ui
+```
 
-## Deploy on Vercel
+### Testes e2e (Playwright)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run test:e2e
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Requer que o servidor de desenvolvimento esteja acessível. O Playwright sobe o servidor automaticamente via `webServer` configurado em `playwright.config.ts`.
+
+### Lint
+
+```bash
+npm run lint
+```
+
+### Formatação
+
+```bash
+npm run format        # aplica formatação
+npm run format:check  # apenas verifica
+```
