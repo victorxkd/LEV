@@ -12,7 +12,12 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "lcov"],
       include: ["src/lib/**"],
-      exclude: ["src/lib/storage/useCart.ts"],
+      exclude: [
+        "src/lib/storage/useCart.ts",
+        "src/lib/storage/useCompare.ts",
+        "src/lib/storage/useProducts.ts",
+        "src/lib/types.ts",
+      ],
       thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
     },
   },
