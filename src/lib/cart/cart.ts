@@ -25,3 +25,7 @@ export function addItem(cart: CartItem[], product: Product, quantity: number): C
     cart: [...cart, { productId: product.id, quantity }],
   };
 }
+
+export function removeItem(cart: CartItem[], productId: string): CartItem[] {
+  return cart.filter((item) => item.productId !== productId);
+}
