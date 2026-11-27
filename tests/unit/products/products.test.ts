@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { validateProduct, createProduct, editProduct, removeProduct } from "@/lib/products/products";
+import {
+  validateProduct,
+  createProduct,
+  editProduct,
+  removeProduct,
+} from "@/lib/products/products";
 import { Product } from "@/lib/types";
 
 const validInput = {
@@ -47,6 +52,13 @@ describe("validateProduct", () => {
     expect(result.ok).toBe(false);
   });
 
+  it.each([NaN, Infinity, 199.5])(
+    "rejeita preço que não é um inteiro de centavos (%s)",
+    (priceInCents) => {
+      expect(validateProduct({ ...validInput, priceInCents }).ok).toBe(false);
+    },
+  );
+
   it("rejeita estoque negativo", () => {
     const result = validateProduct({ ...validInput, stock: -1 });
 
@@ -66,7 +78,14 @@ describe("validateProduct", () => {
   });
 
   it("aceita todas as categorias válidas", () => {
-    const categories = ["keyboard", "mouse", "mousepad", "monitor-stand", "headset", "accessory"] as const;
+    const categories = [
+      "keyboard",
+      "mouse",
+      "mousepad",
+      "monitor-stand",
+      "headset",
+      "accessory",
+    ] as const;
 
     for (const category of categories) {
       const result = validateProduct({ ...validInput, category });

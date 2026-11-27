@@ -60,7 +60,7 @@ describe("createOrder", () => {
     expect(result.order?.createdAt).toEqual(now);
   });
 
-  it("gera um id único para o pedido", () => {
+  it("gera um identificador não vazio para o pedido", () => {
     const cart = [{ productId: "kb-1", quantity: 1 }];
 
     const result = createOrder(cart, products, now);
@@ -76,6 +76,12 @@ describe("createOrder", () => {
 
     expect(result.ok).toBe(false);
     expect(result.order).toBeUndefined();
+  });
+
+  it("rejeita pedido com quantidade fracionária", () => {
+    const cart = [{ productId: "ms-1", quantity: 1.5 }];
+
+    expect(createOrder(cart, products, now)).toEqual({ ok: false });
   });
 
   it("rejeita pedido quando um produto do carrinho não existe no catálogo", () => {

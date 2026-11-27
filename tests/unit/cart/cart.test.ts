@@ -58,6 +58,10 @@ describe("addItem", () => {
     expect(result.ok).toBe(false);
   });
 
+  it.each([NaN, 1.5])("rejeita quantidade que não é um inteiro (%s)", (quantity) => {
+    expect(addItem([], product, quantity)).toEqual({ ok: false, cart: [] });
+  });
+
   it("permite adicionar exatamente o total do estoque", () => {
     const result = addItem([], product, 5);
 
@@ -201,6 +205,12 @@ describe("updateQuantity", () => {
     const result = updateQuantity(cart, "kb-1", -1, 5);
 
     expect(result.ok).toBe(false);
+  });
+
+  it.each([NaN, 1.5])("preserva o carrinho ao receber quantidade inválida (%s)", (quantity) => {
+    const cart = [{ productId: "kb-1", quantity: 2 }];
+
+    expect(updateQuantity(cart, "kb-1", quantity, 5)).toEqual({ ok: false, cart });
   });
 
   it("permite atualizar para exatamente o limite do estoque", () => {

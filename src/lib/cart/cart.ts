@@ -1,9 +1,10 @@
 import { CartItem, Product } from "@/lib/types";
+import { hasEnoughStock } from "@/lib/stock/stock";
 
 type CartResult = { ok: boolean; cart: CartItem[] };
 
 export function addItem(cart: CartItem[], product: Product, quantity: number): CartResult {
-  if (quantity < 1) return { ok: false, cart: [...cart] };
+  if (!hasEnoughStock(product.stock, quantity)) return { ok: false, cart: [...cart] };
 
   const existing = cart.find((item) => item.productId === product.id);
   const currentQty = existing ? existing.quantity : 0;
@@ -36,18 +37,14 @@ export function updateQuantity(
   quantity: number,
   stock: number,
 ): { ok: boolean; cart: CartItem[] } {
-  if (quantity < 1) return { ok: false, cart: [...cart] };
+  if (!hasEnoughStock(stock, quantity)) return { ok: false, cart: [...cart] };
 
   const exists = cart.some((item) => item.productId === productId);
   if (!exists) return { ok: false, cart: [...cart] };
 
-  if (quantity > stock) return { ok: false, cart: [...cart] };
-
   return {
     ok: true,
-    cart: cart.map((item) =>
-      item.productId === productId ? { ...item, quantity } : { ...item },
-    ),
+    cart: cart.map((item) => (item.productId === productId ? { ...item, quantity } : { ...item })),
   };
 }
 
