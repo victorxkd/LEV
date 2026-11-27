@@ -1,7 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const isCI = !!process.env.CI;
-const baseURL = "http://127.0.0.1:3000";
+const host = "127.0.0.1";
+const port = 3100;
+const baseURL = `http://${host}:${port}`;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -9,7 +11,7 @@ export default defineConfig({
   forbidOnly: isCI,
   failOnFlakyTests: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
+  workers: isCI ? 1 : 2,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
@@ -22,8 +24,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: isCI ? "npm run start -- --hostname 127.0.0.1" : "npm run dev -- --hostname 127.0.0.1",
+    command: `npm start -- --hostname ${host} --port ${port}`,
     url: baseURL,
-    reuseExistingServer: !isCI,
+    reuseExistingServer: false,
   },
 });
