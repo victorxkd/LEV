@@ -3,30 +3,14 @@
 import { useState } from "react";
 import { Product } from "@/lib/types";
 import { addToCompare, removeFromCompare } from "@/lib/compare/compare";
-
-const COMPARE_KEY = "lev:compare";
-
-function loadCompare(): Product[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(COMPARE_KEY);
-    return raw ? (JSON.parse(raw) as Product[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCompare(list: Product[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(COMPARE_KEY, JSON.stringify(list));
-}
+import { loadComparison, saveComparison } from "@/lib/storage/storage";
 
 export function useCompare() {
-  const [list, setList] = useState<Product[]>(loadCompare);
+  const [list, setList] = useState<Product[]>(loadComparison);
 
   function persist(newList: Product[]) {
     setList(newList);
-    saveCompare(newList);
+    saveComparison(newList);
   }
 
   function add(product: Product): boolean {

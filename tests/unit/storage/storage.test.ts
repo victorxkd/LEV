@@ -1,6 +1,14 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from "vitest";
-import { loadCart, saveCart, clearCart, loadProducts, saveProducts } from "@/lib/storage/storage";
+import {
+  clearCart,
+  loadCart,
+  loadComparison,
+  loadProducts,
+  saveCart,
+  saveComparison,
+  saveProducts,
+} from "@/lib/storage/storage";
 import { initialProducts } from "@/data/products";
 
 beforeEach(() => {
@@ -29,6 +37,27 @@ describe("loadCart", () => {
     const result = loadCart();
 
     expect(result).toEqual([]);
+  });
+
+  it("retorna lista vazia quando o JSON não representa uma lista", () => {
+    localStorage.setItem("lev:cart", "null");
+
+    expect(loadCart()).toEqual([]);
+  });
+
+  it("preserva itens válidos quando há entradas incompatíveis", () => {
+    const valid = { productId: "kb-1", quantity: 2 };
+    const invalid = [
+      null,
+      [],
+      { productId: false, quantity: 2 },
+      { productId: "kb-2", quantity: "2" },
+      { productId: "kb-2", quantity: 1.5 },
+      { productId: "kb-2", quantity: 0 },
+    ];
+    localStorage.setItem("lev:cart", JSON.stringify([valid, ...invalid]));
+
+    expect(loadCart()).toEqual([valid]);
   });
 });
 
@@ -75,6 +104,31 @@ describe("loadProducts", () => {
 
     expect(result).toEqual(initialProducts);
   });
+
+  it("restaura o catálogo inicial quando todos os produtos salvos são inválidos", () => {
+    localStorage.setItem("lev:products", JSON.stringify([{ ...initialProducts[0], specs: null }]));
+
+    expect(loadProducts()).toEqual(initialProducts);
+  });
+
+  it("preserva o catálogo quando todos os produtos foram removidos", () => {
+    saveProducts([]);
+
+    expect(loadProducts()).toEqual([]);
+  });
+
+  it("preserva produtos válidos quando há entradas incompatíveis", () => {
+    const product = initialProducts[0];
+    const invalid = [
+      { ...product, id: null },
+      { ...product, name: null },
+      { ...product, specs: { brand: {} } },
+      { ...product, priceInCents: null },
+    ];
+    localStorage.setItem("lev:products", JSON.stringify([...invalid, product]));
+
+    expect(loadProducts()).toEqual([product]);
+  });
 });
 
 describe("saveProducts", () => {
@@ -85,5 +139,24 @@ describe("saveProducts", () => {
 
     const saved = JSON.parse(localStorage.getItem("lev:products")!);
     expect(saved[0].stock).toBe(0);
+  });
+});
+
+describe("persistência da comparação", () => {
+  it("usa preço e estoque atuais para os produtos selecionados", () => {
+    const [first, second] = initialProducts;
+    const edited = { ...first, priceInCents: 29990, stock: 3 };
+    saveComparison([second, first]);
+    saveProducts([edited, second]);
+
+    expect(loadComparison()).toEqual([second, edited]);
+  });
+
+  it("ignora produtos selecionados que foram removidos do catálogo", () => {
+    const [first, second] = initialProducts;
+    saveComparison([first, second]);
+    saveProducts([second]);
+
+    expect(loadComparison()).toEqual([second]);
   });
 });
