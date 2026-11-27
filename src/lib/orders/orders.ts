@@ -4,11 +4,7 @@ import { hasEnoughStock } from "@/lib/stock/stock";
 
 type OrderResult = { ok: boolean; order?: Order };
 
-export function createOrder(
-  cart: CartItem[],
-  products: Product[],
-  now: Date,
-): OrderResult {
+export function createOrder(cart: CartItem[], products: Product[], now: Date): OrderResult {
   if (cart.length === 0) return { ok: false };
 
   for (const item of cart) {
