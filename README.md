@@ -41,17 +41,52 @@ Utilizamos Claude e ChatGPT como assistentes durante o desenvolvimento. As ferra
 
 Na etapa de finalização, o Codex auxiliou na análise do repositório, na integração dos testes e2e à CI e na criação de testes de regressão para catálogo, carrinho e persistência.
 
-## Execução dos testes
+## Como rodar a aplicação
 
-### Pré-requisitos
+### Instalação
 
-Use Node.js 22.22.2 ou uma versão posterior da linha 22, como na CI.
+Abra um terminal na pasta `LEV`, onde está o `package.json`. Use Node.js **22.22.2 ou uma versão posterior da linha 22**, como na CI.
 
 ```bash
+node -v
 npm ci
 ```
 
-Para iniciar a aplicação, rode `npm run dev` e abra `http://localhost:3000`. Para testar o build de produção, rode `npm run build` seguido de `npm start`.
+### Desenvolvimento
+
+```bash
+npm run dev
+```
+
+Abra [localhost:3000](http://localhost:3000). O servidor recarrega a aplicação quando você edita o código.
+
+### Produção local
+
+```bash
+npm run build
+npm start
+```
+
+Execute `npm start` depois que o build terminar com sucesso e abra [localhost:3000](http://localhost:3000). Se o servidor de desenvolvimento estiver usando essa porta, encerre-o com `Ctrl+C` antes de iniciar o de produção. Gere um novo build após alterações no código para vê-las no modo de produção.
+
+### Como usar a loja
+
+Abra **Catálogo**, selecione um produto e clique em **Adicionar ao carrinho**. Em **Carrinho**, ajuste a quantidade, confira o total e clique em **Finalizar pedido**. A confirmação mostra o número do pedido. Ao voltar ao catálogo, o estoque reflete a compra simulada.
+
+Você também pode selecionar até três itens com **Comparar** e gerenciar produtos em **Admin**. Uma janela anônima começa com o catálogo e o estoque originais.
+
+### Se o editor indicar erro em `next/link`
+
+Abra a pasta `LEV` no editor e rode os comandos abaixo no mesmo diretório. O Next.js fornece `next/link` e suas declarações de tipo.
+
+```bash
+npm ci
+npm run typecheck
+```
+
+O segundo comando gera os tipos do Next.js e verifica o projeto. Se passar e o erro continuar apenas no editor, reinicie o servidor do TypeScript ou reabra o projeto.
+
+## Execução dos testes
 
 ### Testes de unidade
 
@@ -77,10 +112,13 @@ npm run test:ui
 
 ```bash
 npx playwright install chromium
+npm run build
 npm run test:e2e
 ```
 
-Em Linux, use `npx playwright install --with-deps chromium` se faltarem bibliotecas do sistema. Localmente, o Playwright sobe o servidor de desenvolvimento na porta 3000 ou reaproveita um que já esteja em execução nesse endereço. Na CI, a suíte usa o servidor de produção após `npm run build`. O relatório HTML dos testes fica em `playwright-report/index.html`.
+Em Linux, use `npx playwright install --with-deps chromium` se faltarem bibliotecas do sistema. O Playwright inicia e encerra o servidor de produção na porta **3100**, que deve estar livre. A instalação do Chromium é necessária na primeira vez ou após uma atualização do navegador usado pelo Playwright.
+
+O relatório HTML fica em `playwright-report/index.html`. Para repetir apenas um arquivo após o build, rode, por exemplo, `npm run test:e2e -- tests/e2e/carrinho.spec.ts`.
 
 ### Lint
 
