@@ -2,8 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/catalogo");
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
 });
 
 test("exibe mensagem quando não há produtos na comparação", async ({ page }) => {
@@ -59,4 +57,15 @@ test("remove produto da comparação na página /comparar", async ({ page }) => 
   await page.getByRole("button", { name: "Remover" }).first().click();
   const headers = page.locator("thead th").filter({ hasNotText: "Produto" });
   await expect(headers).toHaveCount(1);
+});
+
+test("limpa a comparação e mantém a seleção vazia após recarregar", async ({ page }) => {
+  await page.getByRole("button", { name: "Comparar", exact: true }).first().click();
+  await page.getByRole("link", { name: "Comparar (1)", exact: true }).click();
+  await page.getByRole("button", { name: "Limpar tudo" }).click();
+
+  const emptyMessage = page.getByText("Nenhum produto selecionado para comparação.");
+  await expect(emptyMessage).toBeVisible();
+  await page.reload();
+  await expect(emptyMessage).toBeVisible();
 });

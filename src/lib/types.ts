@@ -1,10 +1,5 @@
 export type Category =
-  | "keyboard"
-  | "mouse"
-  | "mousepad"
-  | "monitor-stand"
-  | "headset"
-  | "accessory";
+  "keyboard" | "mouse" | "mousepad" | "monitor-stand" | "headset" | "accessory";
 
 export type Product = {
   id: string;

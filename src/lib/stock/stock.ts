@@ -1,7 +1,7 @@
 import { CartItem, Product } from "@/lib/types";
 
 export function hasEnoughStock(stock: number, quantity: number): boolean {
-  return quantity >= 1 && quantity <= stock;
+  return Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= stock;
 }
 
 export function decrementStock(products: Product[], cart: CartItem[]): Product[] {

@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     strategy:
@@ -11,17 +14,30 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: "^22.22.2"
           cache: npm
       - run: npm ci
       - run: npm run lint
       - run: npm run test:coverage
-      - uses: codecov/codecov-action@v5
+      - run: npm run build
+      - name: Instalar Chromium e dependências no Linux
+        if: runner.os == 'Linux'
+        run: npx playwright install --with-deps --only-shell chromium
+      - name: Instalar Chromium no macOS e Windows
+        if: runner.os != 'Linux'
+        run: npx playwright install --only-shell chromium
+      - run: npm run test:e2e
+      - name: Publicar cobertura no Codecov
+        if: github.event_name == 'push'
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+          disable_search: true
+          fail_ci_if_error: true
           flags: ${{ matrix.os }}

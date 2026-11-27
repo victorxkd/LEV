@@ -143,7 +143,9 @@ export function AdminClient() {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label htmlFor="admin-name" className="block text-sm font-medium text-zinc-700 mb-1">Nome</label>
+            <label htmlFor="admin-name" className="block text-sm font-medium text-zinc-700 mb-1">
+              Nome
+            </label>
             <input
               id="admin-name"
               type="text"
@@ -155,7 +157,12 @@ export function AdminClient() {
           </div>
 
           <div>
-            <label htmlFor="admin-category" className="block text-sm font-medium text-zinc-700 mb-1">Categoria</label>
+            <label
+              htmlFor="admin-category"
+              className="block text-sm font-medium text-zinc-700 mb-1"
+            >
+              Categoria
+            </label>
             <select
               id="admin-category"
               value={form.category}
@@ -187,7 +194,9 @@ export function AdminClient() {
           </div>
 
           <div>
-            <label htmlFor="admin-stock" className="block text-sm font-medium text-zinc-700 mb-1">Estoque</label>
+            <label htmlFor="admin-stock" className="block text-sm font-medium text-zinc-700 mb-1">
+              Estoque
+            </label>
             <input
               id="admin-stock"
               type="number"
@@ -241,9 +250,9 @@ export function AdminClient() {
           Produtos cadastrados ({products.length})
         </h2>
 
-        <div className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-3">
           {products.map((product) => (
-            <div
+            <li
               key={product.id}
               className="bg-white border border-zinc-200 rounded-xl p-4 flex items-center gap-4"
             >
@@ -268,9 +277,9 @@ export function AdminClient() {
                   Remover
                 </button>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </div>
   );

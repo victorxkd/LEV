@@ -22,9 +22,7 @@ export function CompararClient() {
   }
 
   // Collect all spec keys present across all products
-  const allSpecKeys = Array.from(
-    new Set(list.flatMap((p) => Object.keys(p.specs))),
-  );
+  const allSpecKeys = Array.from(new Set(list.flatMap((p) => Object.keys(p.specs))));
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -113,10 +111,7 @@ export function CompararClient() {
                   {key}
                 </td>
                 {list.map((product) => (
-                  <td
-                    key={product.id}
-                    className="py-3 px-4 text-zinc-700 border-b border-zinc-100"
-                  >
+                  <td key={product.id} className="py-3 px-4 text-zinc-700 border-b border-zinc-100">
                     {product.specs[key] ?? "—"}
                   </td>
                 ))}

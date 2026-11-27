@@ -20,10 +20,10 @@ export function validateProduct(input: ProductInput): ValidationResult {
   if (!VALID_CATEGORIES.includes(input.category)) {
     return { ok: false, error: "Categoria inválida" };
   }
-  if (input.priceInCents <= 0) {
-    return { ok: false, error: "Preço deve ser maior que zero" };
+  if (!Number.isSafeInteger(input.priceInCents) || input.priceInCents <= 0) {
+    return { ok: false, error: "Preço deve ser um inteiro positivo em centavos" };
   }
-  if (!Number.isInteger(input.stock) || input.stock < 0) {
+  if (!Number.isSafeInteger(input.stock) || input.stock < 0) {
     return { ok: false, error: "Estoque deve ser um inteiro maior ou igual a zero" };
   }
   return { ok: true };
