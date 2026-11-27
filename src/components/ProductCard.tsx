@@ -22,7 +22,7 @@ export function ProductCard({ product, onAddToCart, onAddToCompare, inCompare }:
   const inStock = product.stock > 0;
 
   return (
-    <div className="bg-white rounded-xl border border-zinc-200 p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
+    <article className="bg-white rounded-xl border border-zinc-200 p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between gap-2">
         <h2 className="text-base font-semibold leading-tight text-zinc-900">{product.name}</h2>
         <span className="text-xs bg-zinc-100 text-zinc-600 rounded px-2 py-0.5 whitespace-nowrap shrink-0">
@@ -62,6 +62,6 @@ export function ProductCard({ product, onAddToCart, onAddToCompare, inCompare }:
           Ver detalhes
         </Link>
       </div>
-    </div>
+    </article>
   );
 }

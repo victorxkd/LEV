@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
 
+const mouse = "Mouse Gamer Logitech G PRO X SUPERLIGHT 2";
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/catalogo");
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
 });
 
 test("finaliza pedido e exibe tela de confirmação", async ({ page }) => {
@@ -30,27 +30,44 @@ test("carrinho fica vazio após finalizar pedido", async ({ page }) => {
 });
 
 test("estoque é reduzido após finalizar pedido", async ({ page }) => {
-  // Lê o estoque inicial do primeiro produto
-  const stockText = await page.locator(".grid > div p.text-sm.font-medium").first().textContent();
-  const initialStock = parseInt(stockText!.match(/\d+/)![0], 10);
+  const card = page.getByRole("article").filter({ hasText: mouse });
+  await expect(card.getByText("6 em estoque", { exact: true })).toBeVisible();
 
-  await page.getByRole("button", { name: "Adicionar ao carrinho" }).first().click();
+  await card.getByRole("button", { name: "Adicionar ao carrinho" }).click();
   await page.goto("/carrinho");
   await page.getByRole("button", { name: "Finalizar pedido" }).click();
 
   await page.goto("/catalogo");
-
-  const newStockText = await page
-    .locator(".grid > div p.text-sm.font-medium")
-    .first()
-    .textContent();
-  const newStock = parseInt(newStockText!.match(/\d+/)![0], 10);
-
-  expect(newStock).toBe(initialStock - 1);
+  await expect(card.getByText("5 em estoque", { exact: true })).toBeVisible();
 });
 
 test("não finaliza pedido com carrinho vazio", async ({ page }) => {
   await page.goto("/carrinho");
   await expect(page.getByRole("button", { name: "Finalizar pedido" })).not.toBeVisible();
   await expect(page.getByText("Seu carrinho está vazio.")).toBeVisible();
+});
+
+test("permite ajustar a quantidade após redução de estoque no admin", async ({ page }) => {
+  const card = page.getByRole("article").filter({ hasText: mouse });
+  const add = card.getByRole("button", { name: "Adicionar ao carrinho" });
+  await add.click();
+  await add.click();
+  await add.click();
+
+  await page.goto("/admin");
+  const product = page.getByRole("listitem").filter({ hasText: mouse });
+  await product.getByRole("button", { name: "Editar", exact: true }).click();
+  await page.getByLabel("Estoque", { exact: true }).fill("1");
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await expect(product.getByText(/· 1 em estoque$/)).toBeVisible();
+
+  await page.goto("/carrinho");
+  const finalize = page.getByRole("button", { name: "Finalizar pedido" });
+  await finalize.click();
+  await expect(page.getByRole("main").getByRole("alert")).toContainText("Verifique o estoque");
+
+  await page.getByRole("button", { name: "Diminuir quantidade" }).click();
+  await expect(page.getByLabel("Total do carrinho")).toHaveText("R$ 899,90");
+  await finalize.click();
+  await expect(page.getByRole("heading", { name: "Pedido realizado!" })).toBeVisible();
 });

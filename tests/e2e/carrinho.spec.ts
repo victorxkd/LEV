@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { initialProducts } from "../../src/data/products";
+
+const keyboard = "Teclado Mecânico Redragon Kumara K552";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/catalogo");
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
 });
 
 test("adiciona produto ao carrinho e exibe feedback", async ({ page }) => {
@@ -11,14 +12,19 @@ test("adiciona produto ao carrinho e exibe feedback", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText("adicionado ao carrinho");
 });
 
-test("exibe total correto no carrinho após adicionar produto", async ({ page }) => {
-  await page.getByRole("button", { name: "Adicionar ao carrinho" }).first().click();
-  await page.getByRole("link", { name: "Ver carrinho" }).first().click();
+test("calcula o total do carrinho e o atualiza ao mudar a quantidade", async ({ page }) => {
+  const card = page.getByRole("article").filter({ hasText: keyboard });
+  await card.getByRole("button", { name: "Adicionar ao carrinho" }).click();
+  await page.getByRole("link", { name: "Ver carrinho", exact: true }).click();
 
-  await expect(page.getByText("Total")).toBeVisible();
-  // O total aparece como o maior elemento de preço na página
-  const total = page.locator("span.text-2xl.font-bold");
-  await expect(total).toBeVisible();
+  const total = page.getByLabel("Total do carrinho");
+  await expect(total).toHaveText("R$ 189,90");
+
+  await page.getByRole("button", { name: "Aumentar quantidade" }).click();
+  await expect(total).toHaveText("R$ 379,80");
+
+  await page.getByRole("button", { name: "Diminuir quantidade" }).click();
+  await expect(total).toHaveText("R$ 189,90");
 });
 
 test("botão de aumentar quantidade fica bloqueado no limite do estoque", async ({ page }) => {
@@ -38,18 +44,17 @@ test("botão de aumentar quantidade fica bloqueado no limite do estoque", async 
 });
 
 test("produto fora de estoque tem botão desabilitado no catálogo", async ({ page }) => {
-  // Carrega os produtos padrão, zera o estoque do primeiro e salva antes de navegar
-  const { initialProducts } = await import("../../src/data/products");
-  const modified = initialProducts.map((p, i) => (i === 0 ? { ...p, stock: 0 } : p));
+  const modified = initialProducts.map((product) =>
+    product.name === keyboard ? { ...product, stock: 0 } : product,
+  );
 
-  await page.goto("/catalogo");
   await page.evaluate((products) => {
     localStorage.setItem("lev:products", JSON.stringify(products));
   }, modified);
   await page.reload();
 
-  const firstCard = page.locator(".grid > div").first();
-  await expect(firstCard.getByRole("button", { name: "Adicionar ao carrinho" })).toBeDisabled();
+  const card = page.getByRole("article").filter({ hasText: keyboard });
+  await expect(card.getByRole("button", { name: "Adicionar ao carrinho" })).toBeDisabled();
 });
 
 test("remove item do carrinho", async ({ page }) => {
@@ -57,5 +62,21 @@ test("remove item do carrinho", async ({ page }) => {
   await page.goto("/carrinho");
 
   await page.getByRole("button", { name: "Remover" }).first().click();
+  await expect(page.getByText("Seu carrinho está vazio.")).toBeVisible();
+});
+
+test("permite retirar do carrinho um produto excluído do catálogo", async ({ page }) => {
+  const card = page.getByRole("article").filter({ hasText: keyboard });
+  await card.getByRole("button", { name: "Adicionar ao carrinho" }).click();
+
+  await page.goto("/admin");
+  const product = page.getByRole("listitem").filter({ hasText: keyboard });
+  page.once("dialog", (dialog) => dialog.accept());
+  await product.getByRole("button", { name: "Remover", exact: true }).click();
+  await expect(product).toHaveCount(0);
+
+  await page.goto("/carrinho");
+  await expect(page.getByText("Produto indisponível")).toBeVisible();
+  await page.getByRole("button", { name: "Remover", exact: true }).click();
   await expect(page.getByText("Seu carrinho está vazio.")).toBeVisible();
 });

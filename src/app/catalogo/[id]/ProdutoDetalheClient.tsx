@@ -1,6 +1,5 @@
 "use client";
 
-import { notFound } from "next/navigation";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/lib/storage/useCart";
@@ -13,15 +12,24 @@ export function ProdutoDetalheClient() {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const product = products.find((p) => p.id === id);
-  if (!product) return notFound();
+  if (!product) {
+    return (
+      <div className="max-w-3xl mx-auto px-6 py-10">
+        <h1 className="text-2xl font-bold text-zinc-900 mb-4">Produto não encontrado</h1>
+        <Link href="/catalogo" className="text-sm text-zinc-700 underline">
+          Voltar ao catálogo
+        </Link>
+      </div>
+    );
+  }
 
   const inStock = product.stock > 0;
 
-  function handleAddToCart() {
-    const ok = add(product!, 1);
+  const handleAddToCart = () => {
+    const ok = add(product, 1);
     setFeedback(ok ? "Adicionado ao carrinho!" : "Estoque insuficiente.");
     setTimeout(() => setFeedback(null), 2500);
-  }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
@@ -40,9 +48,7 @@ export function ProdutoDetalheClient() {
           </span>
         </div>
 
-        <p className="text-3xl font-bold text-zinc-900 mb-2">
-          {formatPrice(product.priceInCents)}
-        </p>
+        <p className="text-3xl font-bold text-zinc-900 mb-2">{formatPrice(product.priceInCents)}</p>
 
         <p className={`text-sm font-medium mb-6 ${inStock ? "text-green-600" : "text-red-500"}`}>
           {inStock ? `${product.stock} em estoque` : "Fora de estoque"}
